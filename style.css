@@ -889,4 +889,190 @@ body {
     60% { transform: translateY(-90px) scale(1.1); }
     80% { transform: translateY(-120px) scale(1.05); }
     100% { transform: translateY(-150px) scale(1); }
+
+    /* ====================== TELEGRAM SPECIFIC STYLES ====================== */
+
+/* Фикс для полного экрана в Telegram */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.app-container {
+    height: 100vh;
+    /* Для iOS Safari */
+    height: -webkit-fill-available;
+}
+
+/* Адаптация для разных экранов */
+@media (max-height: 700px) {
+    .goal-container {
+        height: 250px;
+    }
+    
+    .goal {
+        height: 150px;
+    }
+    
+    .tap-area {
+        height: 130px;
+    }
+    
+    .ball {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .energy-container {
+        padding: 10px;
+        margin: 10px 0;
+    }
+    
+    .stats {
+        padding: 10px;
+        font-size: 12px;
+    }
+    
+    .stat strong {
+        font-size: 16px;
+    }
+}
+
+@media (max-height: 600px) {
+    .game-header {
+        padding: 10px;
+    }
+    
+    .currency-display {
+        font-size: 20px;
+    }
+    
+    .level-display {
+        font-size: 14px;
+        padding: 4px 12px;
+    }
+    
+    .goal-container {
+        height: 220px;
+    }
+    
+    .goal {
+        height: 130px;
+    }
+    
+    .boss-info {
+        bottom: -70px;
+        padding: 8px;
+    }
+    
+    .tap-area {
+        height: 110px;
+    }
+    
+    .ball {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .game-footer {
+        padding: 10px;
+    }
+    
+    .nav-btn {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+}
+
+/* Улучшение скролла для магазина */
+.shop-items, .bosses-list, .upgrades-list {
+    scrollbar-width: thin;
+    scrollbar-color: #FFD700 #333;
+}
+
+.shop-items::-webkit-scrollbar,
+.bosses-list::-webkit-scrollbar,
+.upgrades-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.shop-items::-webkit-scrollbar-track,
+.bosses-list::-webkit-scrollbar-track,
+.upgrades-list::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 3px;
+}
+
+.shop-items::-webkit-scrollbar-thumb,
+.bosses-list::-webkit-scrollbar-thumb,
+.upgrades-list::-webkit-scrollbar-thumb {
+    background: #FFD700;
+    border-radius: 3px;
+}
+
+/* Фикс для кнопок в мобильных браузерах */
+.nav-btn, .buy-btn, .equip-btn, .fight-btn, .back-btn {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Фикс для всплывающего урона на мобильных */
+.damage-popup {
+    font-size: 24px !important;
+    text-shadow: 
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000 !important;
+}
+
+/* Адаптация индикатора тапов */
+@media (max-height: 600px) {
+    .tap-indicator {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .tap-stat {
+        font-size: 12px;
+    }
+    
+    .tap-stat strong {
+        font-size: 14px;
+    }
+    
+    .tap-speed-bar {
+        height: 10px;
+    }
+}
+
+/* Фикс для модального окна на мобильных */
+.modal-content {
+    width: 95%;
+    padding: 20px;
+}
+
+.modal-content h2 {
+    font-size: 20px;
+}
+
+.modal-content button {
+    padding: 10px 25px;
+    font-size: 16px;
+}
+
+/* Анимация для лучшей обратной связи */
+@keyframes buttonPress {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.nav-btn:active, 
+.buy-btn:active, 
+.equip-btn:active, 
+.fight-btn:active {
+    animation: buttonPress 0.2s ease-out;
+}
 }
