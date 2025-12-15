@@ -890,7 +890,19 @@ body {
     80% { transform: translateY(-120px) scale(1.05); }
     100% { transform: translateY(-150px) scale(1); }
 
-   /* ====================== TELEGRAM STYLES ====================== */
+ /* ====================== TELEGRAM SPECIFIC STYLES ====================== */
+
+/* Фикс для полного экрана в Telegram */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+.app-container {
+    height: 100vh;
+    /* Для iOS Safari */
+    height: -webkit-fill-available;
+}
 
 .telegram-webapp {
     padding-top: env(safe-area-inset-top);
@@ -899,32 +911,37 @@ body {
     padding-right: env(safe-area-inset-right);
 }
 
-.app-container {
-    height: 100vh;
-    height: -webkit-fill-available;
-}
-
-/* Адаптация для маленьких экранов */
+/* Адаптация для разных экранов */
 @media (max-height: 700px) {
     .goal-container {
         height: 250px;
     }
+    
     .goal {
         height: 150px;
     }
+    
     .tap-area {
         height: 130px;
     }
+    
     .ball {
         width: 80px;
         height: 80px;
     }
+    
     .energy-container {
         padding: 10px;
         margin: 10px 0;
     }
+    
     .stats {
         padding: 10px;
+        font-size: 12px;
+    }
+    
+    .stat strong {
+        font-size: 16px;
     }
 }
 
@@ -932,22 +949,42 @@ body {
     .game-header {
         padding: 10px;
     }
+    
+    .currency-display {
+        font-size: 20px;
+    }
+    
+    .level-display {
+        font-size: 14px;
+        padding: 4px 12px;
+    }
+    
     .goal-container {
         height: 220px;
     }
+    
     .goal {
         height: 130px;
     }
+    
+    .boss-info {
+        bottom: -70px;
+        padding: 8px;
+    }
+    
     .tap-area {
         height: 110px;
     }
+    
     .ball {
         width: 70px;
         height: 70px;
     }
+    
     .game-footer {
         padding: 10px;
     }
+    
     .nav-btn {
         padding: 10px 15px;
         font-size: 12px;
@@ -1046,12 +1083,24 @@ body {
 }
 
 @keyframes shoot {
-    0% { transform: translateY(0) scale(1); }
-    20% { transform: translateY(-30px) scale(1.1); }
-    40% { transform: translateY(-60px) scale(1.2); }
-    60% { transform: translateY(-90px) scale(1.1); }
-    80% { transform: translateY(-120px) scale(1.05); }
-    100% { transform: translateY(-150px) scale(1); }
+    0% { 
+        transform: translateY(0) scale(1); 
+    }
+    20% { 
+        transform: translateY(-30px) scale(1.1); 
+    }
+    40% { 
+        transform: translateY(-60px) scale(1.2); 
+    }
+    60% { 
+        transform: translateY(-90px) scale(1.1); 
+    }
+    80% { 
+        transform: translateY(-120px) scale(1.05); 
+    }
+    100% { 
+        transform: translateY(-150px) scale(1); 
+    }
 }
 
 /* Для iPhone */
