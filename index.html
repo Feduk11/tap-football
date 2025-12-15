@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Tap</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Главный экран игры -->
+        <div id="gameScreen" class="screen active">
+            <header class="game-header">
+                <div class="currency-display">
+                    <i class="fas fa-coins"></i>
+                    <span id="coins">1000</span>
+                </div>
+                <div class="level-display">
+                    Уровень: <span id="level">1</span>
+                </div>
+            </header>
+
+            <main class="game-area">
+                <div class="goal-container">
+                    <div class="goal" id="goal">
+                        <div class="goal-net"></div>
+                        <div class="goal-frame"></div>
+                        <div class="boss-info">
+                            <h3 id="bossName">Ворота 1</h3>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="bossProgress"></div>
+                                </div>
+                                <p id="bossHP">HP: 100/100</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tap-area" id="tapArea">
+                        <div class="ball" id="ball">
+                            <img src="https://cdn-icons-png.flaticon.com/128/947/947416.png" alt="Мяч" id="ballImage">
+                        </div>
+                        <p class="tap-hint">Тапай по мячу!</p>
+                        
+                        <!-- Индикатор урона -->
+                        <div class="damage-indicator" id="damageIndicator">+1</div>
+                        
+                        <!-- Счетчик комбо -->
+                        <div class="combo-counter" id="comboCounter">
+                            <span class="combo-text">Комбо:</span>
+                            <span class="combo-value">0x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Панель энергии -->
+                <div class="energy-container">
+                    <div class="energy-info">
+                        <i class="fas fa-bolt"></i>
+                        <span id="energy">100/100</span>
+                    </div>
+                    <div class="energy-bar">
+                        <div class="energy-fill" id="energyFill"></div>
+                    </div>
+                    <div class="energy-timer" id="energyTimer">Восстановление: 0с</div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <span>Урон за тап:</span>
+                        <strong id="damagePerTap">1</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Энергия за тап:</span>
+                        <strong id="energyPerTap">1</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Монет за гол:</span>
+                        <strong id="coinsPerGoal">10</strong>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="game-footer">
+                <button class="nav-btn" onclick="switchScreen('shop')">
+                    <i class="fas fa-store"></i> Магазин
+                </button>
+                <button class="nav-btn" onclick="switchScreen('bosses')">
+                    <i class="fas fa-trophy"></i> Боссы
+                </button>
+                <button class="nav-btn" onclick="switchScreen('upgrades')">
+                    <i class="fas fa-arrow-up"></i> Улучшения
+                </button>
+                <button class="nav-btn" onclick="resetGame()">
+                    <i class="fas fa-redo"></i> Сброс
+                </button>
+            </footer>
+        </div>
+
+        <!-- Экран магазина -->
+        <div id="shopScreen" class="screen">
+            <header class="shop-header">
+                <button class="back-btn" onclick="switchScreen('game')">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <h2><i class="fas fa-store"></i> Магазин мячей</h2>
+            </header>
+
+            <main class="shop-items">
+                <!-- Мячи будут добавляться через JS -->
+            </main>
+        </div>
+
+        <!-- Экран боссов -->
+        <div id="bossesScreen" class="screen">
+            <header class="bosses-header">
+                <button class="back-btn" onclick="switchScreen('game')">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <h2><i class="fas fa-trophy"></i> Боссы</h2>
+            </header>
+
+            <main class="bosses-list">
+                <!-- Боссы будут добавляться через JS -->
+            </main>
+        </div>
+
+        <!-- Экран улучшений -->
+        <div id="upgradesScreen" class="screen">
+            <header class="upgrades-header">
+                <button class="back-btn" onclick="switchScreen('game')">
+                    <i class="fas fa-arrow-left"></i> Назад
+                </button>
+                <h2><i class="fas fa-arrow-up"></i> Улучшения</h2>
+            </header>
+
+            <main class="upgrades-list">
+                <!-- Улучшения будут добавляться через JS -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Модальное окно уровня -->
+    <div id="levelUpModal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Уровень пройден! 🎉</h2>
+            <p>Вы получили <span class="reward-coins">+50</span> монет!</p>
+            <button onclick="closeModal()">Продолжить</button>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

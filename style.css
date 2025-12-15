@@ -1,0 +1,892 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a2980, #26d0ce);
+    color: white;
+    min-height: 100vh;
+}
+
+.app-container {
+    max-width: 500px;
+    margin: 0 auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+}
+
+.screen {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Главный экран игры */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    border-bottom: 2px solid #FFD700;
+}
+
+.currency-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.level-display {
+    font-size: 18px;
+    background: #2A2A72;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
+
+.game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    position: relative;
+}
+
+.goal-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+
+.goal {
+    position: absolute;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(to bottom, #333, #000);
+    border: 5px solid white;
+    border-radius: 10px;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.goal-net {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: 
+        linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.3) 50%, transparent 51%),
+        linear-gradient(transparent 49%, rgba(255,255,255,0.3) 50%, transparent 51%);
+    background-size: 30px 30px;
+}
+
+.goal-frame {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 5px solid #FFD700;
+    border-radius: 15px;
+    pointer-events: none;
+}
+
+.boss-info {
+    position: absolute;
+    bottom: -80px;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.progress-container {
+    width: 100%;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #333;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00b09b, #96c93d);
+    width: 100%;
+    transition: width 0.3s;
+}
+
+.tap-area {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.ball {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.ball img {
+    width: 70%;
+    height: 70%;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+.tap-hint {
+    margin-top: 10px;
+    color: #FFD700;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+/* Индикатор урона */
+.damage-indicator {
+    position: absolute;
+    color: #FFD700;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Счетчик комбо */
+.combo-counter {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 215, 0, 0.9);
+    color: #000;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.combo-counter.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.combo-text {
+    font-size: 12px;
+}
+
+.combo-value {
+    font-size: 20px;
+}
+
+/* Панель энергии */
+.energy-container {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 15px;
+    margin: 20px 0;
+    border: 2px solid #00b4db;
+}
+
+.energy-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    color: #00b4db;
+    margin-bottom: 10px;
+}
+
+.energy-info i {
+    font-size: 24px;
+}
+
+.energy-bar {
+    width: 100%;
+    height: 20px;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.energy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00b4db, #0083b0);
+    width: 100%;
+    transition: width 0.5s;
+}
+
+.energy-timer {
+    text-align: center;
+    font-size: 14px;
+    color: #8a8a8a;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    margin-top: 10px;
+}
+
+.stat {
+    text-align: center;
+    font-size: 14px;
+}
+
+.stat strong {
+    display: block;
+    font-size: 20px;
+    color: #FFD700;
+}
+
+.game-footer {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.9);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav-btn {
+    background: linear-gradient(45deg, #2A2A72, #009FFD);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s;
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Экран магазина */
+.shop-header, .bosses-header, .upgrades-header {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.9);
+    border-bottom: 2px solid #FFD700;
+    gap: 15px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.shop-items, .bosses-list, .upgrades-list {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.ball-item, .boss-item, .upgrade-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.ball-item:hover, .boss-item:hover, .upgrade-item:hover {
+    border-color: #FFD700;
+    transform: translateY(-2px);
+}
+
+.ball-item.equipped {
+    border-color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.ball-preview {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ball-info {
+    flex: 1;
+}
+
+.ball-info h3 {
+    color: #FFD700;
+    margin-bottom: 5px;
+}
+
+.ball-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    color: #ccc;
+}
+
+.buy-btn, .equip-btn, .fight-btn {
+    background: linear-gradient(45deg, #FF416C, #FF4B2B);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s;
+    white-space: nowrap;
+}
+
+.buy-btn:hover, .equip-btn:hover, .fight-btn:hover {
+    transform: scale(1.05);
+}
+
+.buy-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ball-price {
+    color: #FFD700;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Экран улучшений */
+.upgrade-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.upgrade-icon {
+    font-size: 30px;
+    color: #FFD700;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upgrade-info {
+    flex: 1;
+}
+
+.upgrade-info h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.upgrade-level {
+    font-size: 12px;
+    color: #8a8a8a;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.upgrade-effect {
+    font-size: 12px;
+    color: #00b4db;
+    margin-top: 5px;
+}
+
+.upgrade-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.upgrade-cost {
+    color: #FFD700;
+    font-weight: bold;
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #2A2A72, #009FFD);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 300px;
+    width: 90%;
+    border: 3px solid #FFD700;
+}
+
+.modal-content h2 {
+    color: #FFD700;
+    margin-bottom: 15px;
+}
+
+.modal-content button {
+    background: #FFD700;
+    color: #000;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.reward-coins {
+    color: #FFD700;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Анимации */
+@keyframes damageFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.2);
+    }
+}
+
+@keyframes tapEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.tap-effect {
+    animation: tapEffect 0.1s ease-out;
+}
+
+@keyframes criticalHit {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(2) drop-shadow(0 0 10px #ff0000); }
+    100% { filter: brightness(1); }
+}
+
+.critical-hit {
+    animation: criticalHit 0.3s ease-out;
+}
+
+@keyframes shoot {
+    0% { 
+        transform: translateY(0) scale(1); 
+    }
+    20% { 
+        transform: translateY(-30px) scale(1.1); 
+    }
+    40% { 
+        transform: translateY(-60px) scale(1.2); 
+    }
+    60% { 
+        transform: translateY(-90px) scale(1.1); 
+    }
+    80% { 
+        transform: translateY(-120px) scale(1.05); 
+    }
+    100% { 
+        transform: translateY(-150px) scale(1); 
+    }
+}
+
+.shoot-animation {
+    animation: shoot 0.5s ease-out;
+}
+
+@keyframes energyWarning {
+    0% { background: linear-gradient(90deg, #ff416c, #ff4b2b); }
+    100% { background: linear-gradient(90deg, #00b4db, #0083b0); }
+}
+
+.energy-warning {
+    animation: energyWarning 0.5s ease-out;
+}
+
+/* Адаптивность */
+@media (max-width: 500px) {
+    .stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .ball {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .game-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-btn {
+        justify-content: center;
+    }
+    
+    .ball-item, .upgrade-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .upgrade-action {
+        align-items: center;
+        width: 100%;
+    }
+}
+
+/* Дополнительные стили для анимаций - ДОБАВЬТЕ В КОНЕЦ style.css */
+
+/* Анимация летящего мяча */
+@keyframes flyBall {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    25% {
+        transform: translateY(-50px) scale(1.1);
+    }
+    50% {
+        transform: translateY(-100px) scale(1.2);
+    }
+    75% {
+        transform: translateY(-150px) scale(1.1);
+    }
+    100% {
+        transform: translateY(-200px) scale(1);
+    }
+}
+
+.fly-ball {
+    animation: flyBall 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Анимация попадания в ворота */
+@keyframes hitGoal {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.hit-goal {
+    animation: hitGoal 0.5s ease-out;
+}
+
+/* Анимация вратарской сетки при попадании */
+@keyframes netShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+.net-shake {
+    animation: netShake 0.3s ease-in-out;
+}
+
+/* Стиль для индикатора урона */
+.damage-indicator {
+    position: absolute;
+    color: #FFD700;
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    z-index: 1000;
+    pointer-events: none;
+    display: none;
+}
+
+/* Анимация пульсации при низкой энергии */
+@keyframes lowEnergyPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 65, 108, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(255, 65, 108, 0);
+    }
+}
+
+.low-energy {
+    animation: lowEnergyPulse 1.5s infinite;
+}
+
+/* Эффект вибрации при тапе */
+@keyframes vibrate {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.vibrate {
+    animation: vibrate 0.1s linear;
+}
+
+/* ====================== ИНДИКАТОР ТАПОВ ====================== */
+
+.tap-indicator-container {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 15px;
+    border: 2px solid #6a11cb;
+    box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+}
+
+.tap-indicator-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #6a11cb;
+    font-weight: bold;
+}
+
+.tap-indicator-header i {
+    font-size: 20px;
+}
+
+.tap-indicator-bar {
+    width: 100%;
+    height: 20px;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border: 2px solid #444;
+}
+
+.tap-indicator-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff3300, #cc0000);
+    border-radius: 8px;
+    transition: width 0.5s ease-out, background 0.5s ease-out;
+}
+
+.tap-indicator-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.tap-indicator-stats span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tap-indicator-stats span span {
+    color: #FFD700;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* ИНДИКАТОР ТАПОВ */
+.tap-indicator {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    border: 2px solid #6a11cb;
+}
+
+.tap-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.tap-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tap-stat i {
+    color: #6a11cb;
+    font-size: 18px;
+}
+
+.tap-stat strong {
+    color: #FFD700;
+    font-size: 18px;
+    margin-left: 5px;
+}
+
+.tap-speed-bar {
+    width: 100%;
+    height: 12px;
+    background: #333;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.tap-speed-fill {
+    height: 100%;
+    width: 0%;
+    background: #ff3300;
+    border-radius: 6px;
+    transition: width 0.3s, background 0.3s;
+}
+
+/* Всплывающий урон */
+.damage-popup {
+    animation: damageFloat 1s ease-out forwards;
+}
+
+@keyframes damageFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.2);
+    }
+}
+
+/* Анимации мяча */
+.tap-effect {
+    animation: tapEffect 0.1s ease-out;
+}
+
+@keyframes tapEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+.critical-hit {
+    animation: criticalHit 0.3s ease-out;
+}
+
+@keyframes criticalHit {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(2) drop-shadow(0 0 10px #ff0000); }
+    100% { filter: brightness(1); }
+}
+
+.shoot-animation {
+    animation: shoot 0.5s ease-out;
+}
+
+@keyframes shoot {
+    0% { transform: translateY(0) scale(1); }
+    20% { transform: translateY(-30px) scale(1.1); }
+    40% { transform: translateY(-60px) scale(1.2); }
+    60% { transform: translateY(-90px) scale(1.1); }
+    80% { transform: translateY(-120px) scale(1.05); }
+    100% { transform: translateY(-150px) scale(1); }
+}
