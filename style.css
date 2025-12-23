@@ -67,34 +67,59 @@ body {
     position: relative;
 }
 
+/* ====================== СТИЛИ ДЛЯ ВОРОТ ====================== */
+
 .goal-container {
     position: relative;
     width: 100%;
     height: 300px;
+    margin-bottom: 20px;
 }
 
 .goal {
     position: absolute;
     width: 100%;
     height: 200px;
-    background: linear-gradient(to bottom, #333, #000);
-    border: 5px solid white;
-    border-radius: 10px;
+    /* Основной фон - ваша картинка */
+    background-image: url('goal.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain; /* Пробуем contain вместо cover */
+    background-color: #1a1a1a; /* Фон на случай если картинка не загрузится */
+    border: 5px solid #FFD700;
+    border-radius: 15px;
     top: 0;
     left: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 
+/* Убедимся, что изображение загружается */
+.goal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('goal.jpg') no-repeat center center;
+    background-size: contain;
+    z-index: 0;
+}
+
+/* Сетка ворот поверх изображения */
 .goal-net {
     position: absolute;
     width: 100%;
     height: 100%;
     background: 
-        linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.3) 50%, transparent 51%),
-        linear-gradient(transparent 49%, rgba(255,255,255,0.3) 50%, transparent 51%);
-    background-size: 30px 30px;
+        linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.4) 50%, transparent 52%),
+        linear-gradient(transparent 48%, rgba(255,255,255,0.4) 50%, transparent 52%);
+    background-size: 50px 50px;
+    z-index: 1;
+    pointer-events: none;
 }
 
+/* Рамка ворот */
 .goal-frame {
     position: absolute;
     top: -5px;
@@ -102,8 +127,68 @@ body {
     right: -5px;
     bottom: -5px;
     border: 5px solid #FFD700;
-    border-radius: 15px;
+    border-radius: 20px;
     pointer-events: none;
+    z-index: 2;
+    box-shadow: 0 0 20px rgba(255,215,0,0.3);
+}
+
+/* Информация о боссе */
+.boss-info {
+    position: absolute;
+    bottom: -85px;
+    width: 100%;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 12px;
+    border-radius: 15px;
+    border: 3px solid #FFD700;
+    z-index: 3;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.7);
+}
+
+.boss-info h3 {
+    color: #FFD700;
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+/* Для отладки - если картинка не загрузилась */
+.goal.debug::after {
+    content: 'goal.jpg не загружен';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-weight: bold;
+    z-index: 100;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Адаптивность */
+@media (max-height: 700px) {
+    .goal-container {
+        height: 250px;
+    }
+    .goal {
+        height: 160px;
+    }
+}
+
+@media (max-height: 600px) {
+    .goal-container {
+        height: 220px;
+    }
+    .goal {
+        height: 140px;
+    }
+    .boss-info {
+        bottom: -75px;
+        padding: 8px;
+    }
 }
 
 .boss-info {
@@ -1109,77 +1194,4 @@ html, body {
         height: -webkit-fill-available;
     }
 }
-/* ====================== СТИЛИ ДЛЯ НОВЫХ ВОРОТ ====================== */
 
-.goal {
-    position: absolute;
-    width: 100%;
-    height: 200px;
-    background: url('goal.jpg') no-repeat center center;
-    background-size: cover;
-    border: 3px solid #FFD700;
-    border-radius: 10px;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-}
-
-/* Убираем старую сетку */
-.goal-net {
-    display: none;
-}
-
-/* Делаем прозрачность для видимости мяча */
-.goal::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 1;
-}
-
-/* Информация о боссе поверх ворот */
-.boss-info {
-    position: absolute;
-    bottom: -80px;
-    width: 100%;
-    text-align: center;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px;
-    border-radius: 10px;
-    border: 2px solid #FFD700;
-    z-index: 2;
-}
-
-/* Адаптация для разных размеров экрана */
-@media (max-height: 700px) {
-    .goal-container {
-        height: 250px;
-    }
-    .goal {
-        height: 150px;
-    }
-}
-
-@media (max-height: 600px) {
-    .goal-container {
-        height: 220px;
-    }
-    .goal {
-        height: 130px;
-    }
-}
-
-/* Анимация попадания мяча в ворота */
-@keyframes goalHit {
-    0% { filter: brightness(1); }
-    50% { filter: brightness(1.5) contrast(1.2); }
-    100% { filter: brightness(1); }
-}
-
-.goal-hit {
-    animation: goalHit 0.5s ease-out;
-}
