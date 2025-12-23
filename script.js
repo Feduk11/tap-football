@@ -13,7 +13,6 @@ let gameState = {
     energy: 100,
     maxEnergy: 100,
     currentBoss: 1,
-    combo: 0,
     totalTaps: 0,
     tapsHistory: [],
     
@@ -51,7 +50,8 @@ let gameState = {
     
     bosses: [
         { id: 1, name: "Ворота 1", hp: 100, maxHp: 100, reward: 50, defeated: false },
-        { id: 2, name: "Ворота 2", hp: 500, maxHp: 500, reward: 250, defeated: false }
+        { id: 2, name: "Ворота 2", hp: 500, maxHp: 500, reward: 250, defeated: false },
+        { id: 3, name: "Ворота 3", hp: 1000, maxHp: 1000, reward: 500, defeated: false }
     ],
     
     upgrades: {
@@ -62,12 +62,11 @@ let gameState = {
     }
 };
 
-// ====================== TELEGRAM ИНТЕГРАЦИЯ ======================
+// ====================== ТЕЛЕГРАМ ИНТЕГРАЦИЯ ======================
 
 function initTelegram() {
     if (!tg) {
-        console.log('Запуск в браузере (не Telegram)');
-        setupBrowserFallback();
+        console.log('Запуск в браузере');
         return;
     }
     
@@ -76,152 +75,24 @@ function initTelegram() {
     
     try {
         tg.expand();
-        tg.setHeaderColor('#1a2980');
-        tg.setBackgroundColor('#26d0ce');
+        tg.setHeaderColor('#0a1931');
+        tg.setBackgroundColor('#1a2980');
         tg.disableVerticalSwipes();
         
         tg.MainButton.setText("ℹ️ О игре");
         tg.MainButton.show();
         tg.MainButton.onClick(() => {
-            tg.showAlert('⚽️ Football Tap ⚽️\n\nФутбольный кликер в стиле Hamster Kombat!');
+            tg.showAlert('⚽️ Football Tap ⚽️\n\nТапай по мячу, побеждай боссов, покупай улучшения!');
         });
         
-        tg.isClosingConfirmationEnabled = true;
-        
-        const user = tg.initDataUnsafe?.user;
-        if (user) {
-            setupUserWelcome(user);
-        }
-        
-        tg.onEvent('viewportChanged', updateLayoutForMobile);
-        
-        setTimeout(() => {
-            tg.expand();
-            tg.viewportStableHeight = true;
-        }, 100);
-        
-        addTelegramStyles();
+        document.body.classList.add('telegram-webapp');
         
     } catch (error) {
         console.error('Ошибка Telegram:', error);
-        setupBrowserFallback();
     }
 }
 
-function setupUserWelcome(user) {
-    const welcomeDiv = document.createElement('div');
-    welcomeDiv.className = 'telegram-welcome';
-    welcomeDiv.innerHTML = `
-        <div class="welcome-content">
-            <span class="welcome-text">👋 Привет, ${user.first_name || 'Игрок'}!</span>
-        </div>
-    `;
-    
-    const gameHeader = document.querySelector('.game-header');
-    if (gameHeader) {
-        gameHeader.appendChild(welcomeDiv);
-        setTimeout(() => {
-            welcomeDiv.style.opacity = '0';
-            setTimeout(() => welcomeDiv.remove(), 500);
-        }, 3000);
-    }
-}
-
-function addTelegramStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        .telegram-welcome {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: linear-gradient(90deg, #1a2980, #26d0ce);
-            color: white;
-            padding: 10px 15px;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 1000;
-            animation: slideDown 0.5s ease-out forwards;
-        }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-        .tap-area, .ball, .nav-btn, .buy-btn {
-            -webkit-tap-highlight-color: transparent;
-        }
-    `;
-    document.head.appendChild(style);
-    document.body.classList.add('telegram-webapp');
-}
-
-function setupBrowserFallback() {
-    if (!isTelegram && !window.location.hostname.includes('localhost')) {
-        const telegramBtn = document.createElement('button');
-        telegramBtn.className = 'open-in-telegram';
-        telegramBtn.innerHTML = '📱 Открыть в Telegram';
-        telegramBtn.onclick = () => {
-            window.open('https://t.me/YOUR_BOT_USERNAME', '_blank');
-        };
-        document.body.appendChild(telegramBtn);
-        
-        const style = document.createElement('style');
-        style.textContent = `
-            .open-in-telegram {
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: linear-gradient(45deg, #0088cc, #00a2e8);
-                color: white;
-                border: none;
-                padding: 12px 24px;
-                border-radius: 25px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                z-index: 9999;
-                box-shadow: 0 4px 12px rgba(0,136,204,0.4);
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-function updateLayoutForMobile() {
-    if (!tg) return;
-    
-    const viewportHeight = tg.viewportHeight;
-    const gameArea = document.querySelector('.game-area');
-    const tapArea = document.querySelector('.tap-area');
-    
-    if (viewportHeight < 600) {
-        if (gameArea) gameArea.style.padding = '10px';
-        if (tapArea) tapArea.style.height = '120px';
-    } else if (viewportHeight < 800) {
-        if (gameArea) gameArea.style.padding = '15px';
-        if (tapArea) tapArea.style.height = '140px';
-    }
-    
-    updateShopLayout();
-}
-
-function updateShopLayout() {
-    const shopItems = document.querySelector('.shop-items');
-    const upgradesList = document.querySelector('.upgrades-list');
-    
-    if (shopItems) {
-        shopItems.style.maxHeight = tg?.viewportHeight ? `${tg.viewportHeight - 150}px` : '400px';
-    }
-    
-    if (upgradesList) {
-        upgradesList.style.maxHeight = tg?.viewportHeight ? `${tg.viewportHeight - 150}px` : '400px';
-    }
-}
-
-// ====================== ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ======================
+// ====================== ИНИЦИАЛИЗАЦИЯ ИГРЫ ======================
 
 function initGame() {
     console.log('=== FOOTBALL TAP START ===');
@@ -232,14 +103,9 @@ function initGame() {
     setupShop();
     setupUpgrades();
     setupBosses();
-    setupSimpleTap();
-    initTapIndicator();
+    setupTap();
     
-    setTimeout(() => {
-        updateLayoutForMobile();
-        updateShopLayout();
-    }, 500);
-    
+    // Восстановление энергии
     setInterval(() => {
         if (gameState.energy < gameState.maxEnergy) {
             gameState.energy += 2;
@@ -248,15 +114,17 @@ function initGame() {
             }
             updateUI();
         }
-        updateTapIndicator();
     }, 1000);
     
+    // Авто-тапы
     startAutoTaps();
+    
+    console.log('Игра инициализирована!');
 }
 
 // ====================== СИСТЕМА ТАПОВ ======================
 
-function setupSimpleTap() {
+function setupTap() {
     console.log('Настройка тапов...');
     
     const tapArea = document.getElementById('tapArea');
@@ -271,6 +139,7 @@ function setupSimpleTap() {
             return;
         }
         
+        // Тратим энергию
         gameState.energy -= gameState.energyPerTap;
         gameState.totalTaps++;
         gameState.tapsHistory.push(Date.now());
@@ -279,15 +148,25 @@ function setupSimpleTap() {
             gameState.tapsHistory = gameState.tapsHistory.slice(-100);
         }
         
+        // Анимация
         ball.classList.add('tap-effect');
-        setTimeout(() => ball.classList.remove('tap-effect'), 100);
+        setTimeout(() => ball.classList.remove('tap-effect'), 150);
         
         ball.classList.add('shoot-animation');
-        setTimeout(() => ball.classList.remove('shoot-animation'), 500);
+        setTimeout(() => ball.classList.remove('shoot-animation'), 700);
         
+        // Урон
         const damage = calculateDamage();
         showDamage(damage);
         
+        // Анимация попадания в ворота
+        const goal = document.getElementById('goal');
+        if (goal) {
+            goal.classList.add('goal-hit');
+            setTimeout(() => goal.classList.remove('goal-hit'), 300);
+        }
+        
+        // Наносим урон
         dealDamage(damage);
         
         updateUI();
@@ -308,8 +187,6 @@ function setupSimpleTap() {
         e.preventDefault();
         handleTap();
     };
-    
-    console.log('Тапы настроены!');
 }
 
 function calculateDamage() {
@@ -319,7 +196,7 @@ function calculateDamage() {
     if (Math.random() < 0.1) {
         const ball = document.getElementById('ball');
         ball.classList.add('critical-hit');
-        setTimeout(() => ball.classList.remove('critical-hit'), 300);
+        setTimeout(() => ball.classList.remove('critical-hit'), 400);
         return Math.floor(baseDamage * 2);
     }
     
@@ -327,40 +204,28 @@ function calculateDamage() {
 }
 
 function showDamage(damage) {
-    const indicator = document.createElement('div');
-    indicator.className = 'damage-popup';
-    indicator.textContent = `-${damage}`;
-    indicator.style.position = 'absolute';
-    indicator.style.color = '#FFD700';
-    indicator.style.fontSize = '28px';
-    indicator.style.fontWeight = 'bold';
-    indicator.style.textShadow = '2px 2px 4px #000';
-    indicator.style.zIndex = '1000';
-    indicator.style.pointerEvents = 'none';
-    
+    const indicator = document.getElementById('damageIndicator');
     const ball = document.getElementById('ball');
+    
+    if (!indicator || !ball) return;
+    
     const ballRect = ball.getBoundingClientRect();
     const container = document.querySelector('.app-container');
-    const containerRect = container.getBoundingClientRect();
     
-    indicator.style.left = `${ballRect.left - containerRect.left + 40}px`;
-    indicator.style.top = `${ballRect.top - containerRect.top - 30}px`;
+    indicator.textContent = `-${damage}`;
+    indicator.style.left = `${ballRect.left + ballRect.width / 2}px`;
+    indicator.style.top = `${ballRect.top}px`;
     
-    container.appendChild(indicator);
+    indicator.style.display = 'block';
+    indicator.style.animation = 'none';
     
-    indicator.animate([
-        { opacity: 1, transform: 'translateY(0) scale(1)' },
-        { opacity: 0, transform: 'translateY(-50px) scale(1.2)' }
-    ], {
-        duration: 1000,
-        easing: 'ease-out'
-    });
+    setTimeout(() => {
+        indicator.style.animation = 'damageFloat 1s ease-out forwards';
+    }, 10);
     
-    setTimeout(() => indicator.remove(), 1000);
-    
-    if (isTelegram && damage > gameState.damagePerTap * 1.5) {
-        if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-    }
+    setTimeout(() => {
+        indicator.style.display = 'none';
+    }, 1000);
 }
 
 function showEnergyWarning() {
@@ -394,75 +259,6 @@ function dealDamage(damage) {
             showLevelUp(reward);
         } else {
             alert('🎉 Все боссы побеждены! 🎉');
-        }
-    }
-    const goal = document.getElementById('goal');
-if (goal) {
-    goal.classList.add('goal-hit');
-    setTimeout(() => {
-        goal.classList.remove('goal-hit');
-    }, 500);
-}
-}
-
-// ====================== ИНДИКАТОР ТАПОВ ======================
-
-function initTapIndicator() {
-    const tapIndicator = document.createElement('div');
-    tapIndicator.className = 'tap-indicator';
-    tapIndicator.innerHTML = `
-        <div class="tap-stats">
-            <div class="tap-stat">
-                <i class="fas fa-mouse-pointer"></i>
-                <span>Тапы/сек: <strong id="tapsPerSec">0</strong></span>
-            </div>
-            <div class="tap-stat">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Всего: <strong id="totalTapsCount">0</strong></span>
-            </div>
-        </div>
-        <div class="tap-speed-bar">
-            <div class="tap-speed-fill" id="tapSpeedFill"></div>
-        </div>
-    `;
-    
-    const gameArea = document.querySelector('.game-area');
-    if (gameArea) {
-        const stats = document.querySelector('.stats');
-        gameArea.insertBefore(tapIndicator, stats);
-    }
-}
-
-function updateTapIndicator() {
-    const now = Date.now();
-    const threeSecondsAgo = now - 3000;
-    const recentTaps = gameState.tapsHistory.filter(time => time > threeSecondsAgo).length;
-    const tapsPerSecond = recentTaps / 3;
-    
-    const tapsPerSecEl = document.getElementById('tapsPerSec');
-    const totalTapsEl = document.getElementById('totalTapsCount');
-    const tapSpeedFill = document.getElementById('tapSpeedFill');
-    
-    if (tapsPerSecEl) {
-        tapsPerSecEl.textContent = tapsPerSecond.toFixed(1);
-    }
-    
-    if (totalTapsEl) {
-        totalTapsEl.textContent = gameState.totalTaps;
-    }
-    
-    if (tapSpeedFill) {
-        const fillPercent = Math.min((tapsPerSecond / 5) * 100, 100);
-        tapSpeedFill.style.width = `${fillPercent}%`;
-        
-        if (tapsPerSecond > 4) {
-            tapSpeedFill.style.background = '#00ff00';
-        } else if (tapsPerSecond > 2) {
-            tapSpeedFill.style.background = '#ffff00';
-        } else if (tapsPerSecond > 1) {
-            tapSpeedFill.style.background = '#ff9900';
-        } else {
-            tapSpeedFill.style.background = '#ff3300';
         }
     }
 }
@@ -513,6 +309,7 @@ function updateUI() {
     document.getElementById('damagePerTap').textContent = gameState.damagePerTap;
     gameState.energyPerTap = currentBall.energyCost;
     document.getElementById('energyPerTap').textContent = gameState.energyPerTap;
+    document.getElementById('coinsPerGoal').textContent = 10 * gameState.upgrades.reward.level;
     
     const boss = gameState.bosses[gameState.currentBoss - 1];
     if (boss) {
@@ -527,10 +324,6 @@ function updateUI() {
     document.getElementById('energy').textContent = `${Math.floor(gameState.energy)}/${gameState.maxEnergy}`;
     
     document.getElementById('ballImage').src = currentBall.icon;
-    
-    if (isTelegram && tg) {
-        updateShopLayout();
-    }
 }
 
 // ====================== МАГАЗИН ======================
@@ -556,14 +349,14 @@ function setupShop() {
                     <span>Энергия: ${ball.energyCost}</span>
                 </div>
                 ${!ball.owned ? 
-                    `<p class="ball-price">Цена: ${ball.price} монет</p>` : 
+                    `<p class="ball-price">${ball.price} монет</p>` : 
                     '<p>✓ Владеете</p>'
                 }
             </div>
             <button class="${ball.owned ? 'equip-btn' : 'buy-btn'}" 
                     onclick="${ball.owned ? `equipBall('${ball.id}')` : `buyBall('${ball.id}')`}"
                     ${ball.equipped ? 'disabled' : ''}>
-                ${ball.owned ? (ball.equipped ? 'Экипирован' : 'Экипировать') : 'Купить'}
+                ${ball.owned ? (ball.equipped ? '✓' : 'Надеть') : 'Купить'}
             </button>
         `;
         
@@ -657,7 +450,7 @@ function setupUpgrades() {
                 <p>${upgrade.description}</p>
             </div>
             <div class="upgrade-action">
-                <p class="upgrade-cost">${upgrade.cost} монет</p>
+                <p class="upgrade-cost">${upgrade.cost}</p>
                 <button class="buy-btn" onclick="buyUpgrade('${upgrade.id}')"
                         ${gameState.coins < upgrade.cost ? 'disabled' : ''}>
                     Улучшить
@@ -716,12 +509,12 @@ function setupBosses() {
                 <h3>${boss.name}</h3>
                 <p>HP: ${boss.hp}/${boss.maxHp}</p>
                 <p>Награда: ${boss.reward * 10} монет</p>
-                <p>Статус: ${boss.defeated ? '✅ Побежден' : '⚔️ Доступен'}</p>
+                <p>${boss.defeated ? '✅ Побежден' : '⚔️ Доступен'}</p>
             </div>
             <button class="fight-btn" 
                     onclick="fightBoss(${boss.id})"
                     ${boss.defeated || gameState.currentBoss !== boss.id ? 'disabled' : ''}>
-                ${boss.defeated ? 'Побежден' : 'Сражаться'}
+                ${boss.defeated ? '✓' : 'Сражаться'}
             </button>
         `;
         
@@ -780,7 +573,7 @@ function switchScreen(screenName) {
 }
 
 function resetGame() {
-    if (confirm('Сбросить игру?')) {
+    if (confirm('Сбросить игру? Весь прогресс будет потерян!')) {
         localStorage.removeItem('footballTapGame');
         location.reload();
     }
