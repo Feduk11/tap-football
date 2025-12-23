@@ -396,6 +396,13 @@ function dealDamage(damage) {
             alert('🎉 Все боссы побеждены! 🎉');
         }
     }
+    const goal = document.getElementById('goal');
+if (goal) {
+    goal.classList.add('goal-hit');
+    setTimeout(() => {
+        goal.classList.remove('goal-hit');
+    }, 500);
+}
 }
 
 // ====================== ИНДИКАТОР ТАПОВ ======================
