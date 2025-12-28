@@ -1,7 +1,10 @@
+/* ====================== ОСНОВНЫЕ СТИЛИ ====================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -10,16 +13,16 @@ body {
     color: white;
     height: 100vh;
     overflow: hidden;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .app-container {
-    max-width: 100%;
+    width: 100%;
     height: 100vh;
+    max-width: 500px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.85);
-    overflow: hidden;
+    background: rgba(0, 0, 0, 0.8);
     position: relative;
 }
 
@@ -28,21 +31,22 @@ body {
     flex: 1;
     flex-direction: column;
     height: 100%;
+    overflow: hidden;
 }
 
 .screen.active {
     display: flex;
 }
 
-/* ====================== ГОЛОВНОЙ ЭКРАН ====================== */
+/* ====================== ШАПКА ====================== */
 
 .game-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 15px;
-    background: rgba(10, 25, 49, 0.95);
-    border-bottom: 3px solid #FFD700;
+    background: rgba(10, 25, 49, 0.9);
+    border-bottom: 2px solid #FFD700;
     flex-shrink: 0;
     z-index: 100;
 }
@@ -51,33 +55,34 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
     color: #FFD700;
 }
 
 .level-display {
     font-size: 16px;
-    background: linear-gradient(45deg, #2A2A72, #009FFD);
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-weight: bold;
+    background: rgba(255, 215, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 15px;
+    border: 1px solid #FFD700;
 }
+
+/* ====================== ОБЛАСТЬ ИГРЫ ====================== */
 
 .game-area {
     flex: 1;
     display: flex;
     flex-direction: column;
-    position: relative;
     overflow: hidden;
 }
 
-/* ====================== ВОРОТА (ГЛАВНЫЙ ЭЛЕМЕНТ) ====================== */
+/* ====================== ВОРОТА ====================== */
 
 .goal-container {
     position: relative;
     width: 100%;
-    height: 65vh; /* Большая высота! */
+    height: 50vh;
     flex-shrink: 0;
     margin: 0;
 }
@@ -86,61 +91,48 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: 
-        linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)),
-        url('https://i.imgur.com/3QjZl7j.jpg') no-repeat center center;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), 
+                url('https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&auto=format&fit=crop') 
+                no-repeat center center;
     background-size: cover;
-    border-bottom: 5px solid #FFD700;
+    border-bottom: 3px solid #FFD700;
     overflow: visible;
     z-index: 1;
 }
 
-.goal-net {
+.goal-placeholder {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background: 
-        linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.15) 50%, transparent 52%),
-        linear-gradient(transparent 48%, rgba(255,255,255,0.15) 50%, transparent 52%);
-    background-size: 50px 50px;
-    z-index: 2;
-    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    color: rgba(255, 255, 255, 0.2);
+    z-index: 1;
 }
 
-.goal-frame {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 4px solid #FFD700;
-    box-shadow: inset 0 0 30px rgba(255,215,0,0.3);
-    pointer-events: none;
-    z-index: 3;
-}
+/* ====================== HP ВОРОТ ====================== */
 
-/* HP ворот - компактно снизу */
 .boss-info {
     position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 400px;
+    bottom: 10px;
+    left: 0;
+    right: 0;
     text-align: center;
-    background: rgba(0, 0, 0, 0.9);
-    padding: 10px 15px;
-    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.85);
+    padding: 8px 10px;
+    border-radius: 10px;
     border: 2px solid #FFD700;
     z-index: 10;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+    margin: 0 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
-.boss-info h3 {
+.boss-name {
     color: #FFD700;
-    margin-bottom: 8px;
-    font-size: 18px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
 .progress-container {
@@ -149,178 +141,116 @@ body {
 
 .progress-bar {
     width: 100%;
-    height: 14px;
-    background: #333;
-    border-radius: 7px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
     overflow: hidden;
-    margin: 5px 0;
-    border: 1px solid #555;
+    margin-bottom: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #FF416C, #FF4B2B);
+    background: linear-gradient(90deg, #00b09b, #96c93d);
     width: 100%;
-    transition: width 0.3s ease-out;
+    transition: width 0.3s ease;
+    border-radius: 6px;
 }
 
-.boss-info p {
-    font-size: 14px;
+.hp-text {
+    font-size: 12px;
     color: #ddd;
-    margin-top: 5px;
+    font-weight: bold;
 }
 
-/* ====================== МЯЧ И ТАП-ЗОНА ====================== */
+/* ====================== МЯЧ И ТАП ЗОНА ====================== */
 
 .tap-area {
     position: absolute;
-    bottom: 25%;
+    bottom: 0;
     left: 0;
     right: 0;
-    height: 40vh;
+    height: 20vh;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     cursor: pointer;
     z-index: 5;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 .ball {
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
     background: radial-gradient(circle at 30% 30%, #ffffff, #cccccc);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 
-        0 15px 35px rgba(0,0,0,0.7),
-        0 0 30px rgba(255,215,0,0.4);
+        0 10px 25px rgba(0,0,0,0.7),
+        0 0 20px rgba(255,215,0,0.3);
     transition: transform 0.1s;
     z-index: 6;
-    position: relative;
 }
 
 .ball img {
-    width: 80%;
-    height: 80%;
-    filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.5));
+    width: 70%;
+    height: 70%;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
 }
 
 .ball:active {
     transform: scale(0.95);
 }
 
-.tap-hint {
-    margin-top: 20px;
-    color: #FFD700;
-    font-weight: bold;
-    font-size: 18px;
+/* ====================== СТАТИСТИКА ====================== */
+
+.stats-container {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 0;
+    margin: 5px 0;
+    flex-shrink: 0;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.stat-item {
     text-align: center;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-    animation: pulse 2s infinite;
-    background: rgba(0,0,0,0.6);
-    padding: 8px 15px;
-    border-radius: 20px;
+    flex: 1;
+    padding: 0 2px;
 }
 
-@keyframes pulse {
-    0% { opacity: 0.7; transform: scale(0.95); }
-    50% { opacity: 1; transform: scale(1.05); }
-    100% { opacity: 0.7; transform: scale(0.95); }
+.stat-label {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Индикатор урона */
-.damage-indicator {
-    position: absolute;
+.stat-value {
+    font-size: 16px;
     color: #FFD700;
-    font-size: 32px;
     font-weight: bold;
-    text-shadow: 
-        3px 3px 0 #000,
-        -3px -3px 0 #000,
-        3px -3px 0 #000,
-        -3px 3px 0 #000;
-    z-index: 100;
-    pointer-events: none;
-    display: none;
 }
 
-/* ====================== АНИМАЦИЯ УДАРА (в центр ворот) ====================== */
-
-@keyframes shoot {
-    0% { 
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
-    20% { 
-        transform: translateY(-40px) scale(1.1); 
-    }
-    40% { 
-        transform: translateY(-80px) scale(1.2); 
-    }
-    60% { 
-        transform: translateY(-120px) scale(1.3); 
-    }
-    80% { 
-        transform: translateY(-150px) scale(1.2);
-        opacity: 0.9;
-    }
-    100% { 
-        transform: translateY(-180px) scale(1);
-        opacity: 0;
-    }
-}
-
-.shoot-animation {
-    animation: shoot 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes tapEffect {
-    0% { transform: scale(1); }
-    50% { transform: scale(0.9); }
-    100% { transform: scale(1); }
-}
-
-.tap-effect {
-    animation: tapEffect 0.15s ease-out;
-}
-
-@keyframes criticalHit {
-    0% { filter: brightness(1); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
-    50% { 
-        filter: brightness(1.8) drop-shadow(0 0 20px #ff0000); 
-        box-shadow: 0 0 40px rgba(255,0,0,0.8);
-    }
-    100% { filter: brightness(1); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
-}
-
-.critical-hit {
-    animation: criticalHit 0.4s ease-out;
-}
-
-@keyframes goalHit {
-    0% { filter: brightness(1); }
-    50% { filter: brightness(1.5); }
-    100% { filter: brightness(1); }
-}
-
-.goal-hit {
-    animation: goalHit 0.3s ease-out;
-}
-
-/* ====================== ЭНЕРГИЯ И СТАТИСТИКА ====================== */
+/* ====================== ЭНЕРГИЯ ====================== */
 
 .energy-container {
-    width: 90%;
-    max-width: 400px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 12px 15px;
-    border-radius: 15px;
-    margin: 15px auto;
-    border: 2px solid #00b4db;
+    width: 95%;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin: 5px auto 10px;
+    border: 1px solid #00b4db;
     flex-shrink: 0;
 }
 
@@ -328,20 +258,20 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 16px;
+    font-size: 14px;
     color: #00b4db;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .energy-info i {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .energy-bar {
     width: 100%;
-    height: 16px;
-    background: #222;
-    border-radius: 8px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
     overflow: hidden;
 }
 
@@ -349,32 +279,8 @@ body {
     height: 100%;
     background: linear-gradient(90deg, #00b4db, #0083b0);
     width: 100%;
-    transition: width 0.5s ease-out;
-}
-
-.stats {
-    display: flex;
-    justify-content: space-around;
-    width: 90%;
-    max-width: 400px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 12px;
-    border-radius: 15px;
-    margin: 0 auto 15px;
-    flex-shrink: 0;
-}
-
-.stat {
-    text-align: center;
-    font-size: 12px;
-    color: #ccc;
-}
-
-.stat strong {
-    display: block;
-    font-size: 18px;
-    color: #FFD700;
-    margin-top: 3px;
+    transition: width 0.5s ease;
+    border-radius: 5px;
 }
 
 /* ====================== КНОПКИ НАВИГАЦИИ ====================== */
@@ -382,9 +288,9 @@ body {
 .game-footer {
     display: flex;
     justify-content: space-around;
-    padding: 10px 15px;
-    background: rgba(10, 25, 49, 0.95);
-    border-top: 3px solid #FFD700;
+    padding: 10px;
+    background: rgba(10, 25, 49, 0.9);
+    border-top: 2px solid #FFD700;
     flex-shrink: 0;
     z-index: 100;
 }
@@ -393,8 +299,8 @@ body {
     background: linear-gradient(45deg, #2A2A72, #009FFD);
     color: white;
     border: none;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     font-size: 18px;
     cursor: pointer;
@@ -402,12 +308,7 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-.nav-btn:hover {
-    transform: translateY(-3px) scale(1.1);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 .nav-btn:active {
@@ -416,12 +317,12 @@ body {
 
 /* ====================== ЭКРАНЫ МАГАЗИНА/УЛУЧШЕНИЙ ====================== */
 
-.shop-header, .bosses-header, .upgrades-header {
+.screen-header {
     display: flex;
     align-items: center;
     padding: 15px;
     background: rgba(10, 25, 49, 0.95);
-    border-bottom: 3px solid #FFD700;
+    border-bottom: 2px solid #FFD700;
     gap: 15px;
     flex-shrink: 0;
 }
@@ -432,50 +333,41 @@ body {
     color: white;
     font-size: 20px;
     cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
+    padding: 5px;
     width: 40px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
+    border-radius: 50%;
 }
 
-.back-btn:hover {
+.back-btn:active {
     background: rgba(255,255,255,0.1);
 }
 
-.shop-header h2, .bosses-header h2, .upgrades-header h2 {
+.screen-header h2 {
     color: #FFD700;
     font-size: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    flex: 1;
 }
 
 .shop-items, .bosses-list, .upgrades-list {
     flex: 1;
-    padding: 20px;
+    padding: 15px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 
-.ball-item, .boss-item, .upgrade-item {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border: 2px solid transparent;
-    transition: all 0.3s;
-}
+/* ====================== ЭЛЕМЕНТЫ МАГАЗИНА ====================== */
 
-.ball-item:hover, .boss-item:hover, .upgrade-item:hover {
-    border-color: #FFD700;
-    background: rgba(255, 255, 255, 0.12);
+.ball-item, .boss-item, .upgrade-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
 }
 
 .ball-item.equipped {
@@ -484,24 +376,20 @@ body {
 }
 
 .ball-preview {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-}
-
-.ball-info {
-    flex: 1;
+    margin-right: 12px;
 }
 
 .ball-info h3 {
     color: #FFD700;
-    margin-bottom: 5px;
     font-size: 16px;
+    margin-bottom: 5px;
 }
 
 .ball-stats {
@@ -515,87 +403,61 @@ body {
     background: linear-gradient(45deg, #FF416C, #FF4B2B);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 8px 16px;
+    border-radius: 15px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 14px;
     transition: transform 0.2s;
-    white-space: nowrap;
-    flex-shrink: 0;
 }
 
-.buy-btn:hover, .equip-btn:hover, .fight-btn:hover {
-    transform: scale(1.05);
-}
-
-.buy-btn:disabled {
+.buy-btn:disabled, .equip-btn:disabled, .fight-btn:disabled {
     background: #666;
     cursor: not-allowed;
-    transform: none;
 }
 
-.ball-price {
-    color: #FFD700;
-    font-weight: bold;
-    font-size: 16px;
+/* ====================== АНИМАЦИИ ====================== */
+
+@keyframes shoot {
+    0% { 
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    30% { 
+        transform: translateY(-40px) scale(1.1); 
+    }
+    70% { 
+        transform: translateY(-80px) scale(1.2);
+        opacity: 0.8;
+    }
+    100% { 
+        transform: translateY(-100px) scale(1);
+        opacity: 0;
+    }
 }
 
-.upgrade-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.shoot-animation {
+    animation: shoot 0.6s ease-out forwards;
 }
 
-.upgrade-icon {
-    font-size: 24px;
-    color: #FFD700;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+@keyframes tapEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.9); }
+    100% { transform: scale(1); }
 }
 
-.upgrade-info {
-    flex: 1;
+.tap-effect {
+    animation: tapEffect 0.15s ease-out;
 }
 
-.upgrade-info h3 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-    color: #FFD700;
-    font-size: 16px;
+@keyframes goalHit {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+    100% { filter: brightness(1); }
 }
 
-.upgrade-level {
-    font-size: 12px;
-    color: #aaa;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 3px 10px;
-    border-radius: 10px;
-}
-
-.upgrade-effect {
-    font-size: 12px;
-    color: #00b4db;
-    margin-top: 5px;
-}
-
-.upgrade-action {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.upgrade-cost {
-    color: #FFD700;
-    font-weight: bold;
-    font-size: 14px;
+.goal-hit {
+    animation: goalHit 0.3s ease-out;
 }
 
 /* ====================== МОДАЛЬНОЕ ОКНО ====================== */
@@ -615,164 +477,167 @@ body {
 
 .modal-content {
     background: linear-gradient(135deg, #2A2A72, #009FFD);
-    padding: 30px;
-    border-radius: 20px;
+    padding: 25px;
+    border-radius: 15px;
     text-align: center;
+    width: 85%;
     max-width: 300px;
-    width: 90%;
-    border: 4px solid #FFD700;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    border: 3px solid #FFD700;
 }
 
 .modal-content h2 {
     color: #FFD700;
-    margin-bottom: 15px;
-    font-size: 24px;
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.modal-content p {
+    margin: 10px 0;
+    font-size: 16px;
 }
 
 .modal-content button {
     background: #FFD700;
     color: #000;
     border: none;
-    padding: 12px 30px;
-    border-radius: 25px;
-    font-size: 18px;
+    padding: 10px 25px;
+    border-radius: 20px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 20px;
-    transition: transform 0.2s;
-}
-
-.modal-content button:hover {
-    transform: scale(1.05);
+    margin-top: 15px;
 }
 
 .reward-coins {
     color: #FFD700;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
-    display: block;
-    margin: 10px 0;
-}
-
-/* ====================== ТЕЛЕГРАМ АДАПТАЦИЯ ====================== */
-
-.telegram-webapp {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-}
-
-@supports (-webkit-touch-callout: none) {
-    .app-container {
-        height: -webkit-fill-available;
-    }
 }
 
 /* ====================== АДАПТИВНОСТЬ ====================== */
 
-@media (max-width: 400px) {
-    .ball {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .tap-hint {
-        font-size: 16px;
-        padding: 6px 12px;
-    }
-    
-    .game-header {
-        padding: 10px;
-    }
-    
-    .currency-display {
-        font-size: 20px;
-    }
-    
-    .level-display {
-        font-size: 14px;
-        padding: 5px 12px;
-    }
-    
-    .nav-btn {
-        width: 45px;
-        height: 45px;
-        font-size: 16px;
-    }
-}
-
 @media (max-height: 700px) {
     .goal-container {
-        height: 60vh;
+        height: 45vh;
     }
     
     .ball {
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
     }
     
     .tap-area {
-        bottom: 30%;
-        height: 35vh;
+        height: 18vh;
     }
     
-    .tap-hint {
-        font-size: 16px;
-        margin-top: 15px;
+    .boss-info {
+        padding: 6px 8px;
+        bottom: 8px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
+    }
+    
+    .stat-value {
+        font-size: 14px;
     }
 }
 
 @media (max-height: 600px) {
     .goal-container {
-        height: 55vh;
+        height: 40vh;
     }
     
     .ball {
-        width: 90px;
-        height: 90px;
+        width: 60px;
+        height: 60px;
     }
     
     .tap-area {
-        bottom: 35%;
-        height: 30vh;
+        height: 15vh;
+        padding-bottom: 5px;
     }
     
-    .tap-hint {
+    .game-header {
+        padding: 10px 12px;
+    }
+    
+    .currency-display {
+        font-size: 18px;
+    }
+    
+    .level-display {
         font-size: 14px;
-        margin-top: 10px;
+        padding: 5px 10px;
+    }
+    
+    .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .stats-container {
+        padding: 6px 0;
     }
     
     .energy-container {
-        padding: 10px;
-        margin: 10px auto;
-    }
-    
-    .stats {
-        padding: 10px;
-        margin-bottom: 10px;
-    }
-    
-    .stat strong {
-        font-size: 16px;
+        padding: 6px 10px;
+        margin: 3px auto 8px;
     }
 }
 
-/* Прокрутка в магазине */
+/* Для очень маленьких экранов */
+@media (max-height: 500px) {
+    .goal-container {
+        height: 35vh;
+    }
+    
+    .ball {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .boss-info {
+        padding: 5px;
+        bottom: 5px;
+        margin: 0 8px;
+    }
+    
+    .boss-name {
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+    
+    .progress-bar {
+        height: 10px;
+    }
+    
+    .hp-text {
+        font-size: 10px;
+    }
+}
+
+/* Фикс для Telegram */
+.telegram-webapp {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Улучшаем скролл */
 .shop-items::-webkit-scrollbar,
 .upgrades-list::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .shop-items::-webkit-scrollbar-track,
 .upgrades-list::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.1);
-    border-radius: 3px;
+    background: rgba(255,255,255,0.05);
 }
 
 .shop-items::-webkit-scrollbar-thumb,
 .upgrades-list::-webkit-scrollbar-thumb {
     background: #FFD700;
-    border-radius: 3px;
+    border-radius: 2px;
 }
