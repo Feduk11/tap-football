@@ -1,8 +1,7 @@
 // ====================== FOOTBALL TAP - ПОЛНЫЙ КОД ======================
 
-// Telegram Web App Integration
+// Telegram Web App
 let tg = window.Telegram?.WebApp;
-let isTelegram = false;
 
 // Данные игры
 let gameState = {
@@ -14,7 +13,6 @@ let gameState = {
     maxEnergy: 100,
     currentBoss: 1,
     totalTaps: 0,
-    tapsHistory: [],
     
     balls: [
         { 
@@ -35,75 +33,46 @@ let gameState = {
             energyCost: 2,
             icon: 'https://cdn-icons-png.flaticon.com/128/3048/3048120.png',
             price: 500
-        },
-        { 
-            id: 'puma', 
-            name: 'Puma Ball', 
-            owned: false, 
-            equipped: false, 
-            damage: 3, 
-            energyCost: 3,
-            icon: 'https://cdn-icons-png.flaticon.com/128/3144/3144020.png',
-            price: 1000
         }
     ],
     
     bosses: [
         { id: 1, name: "Ворота 1", hp: 100, maxHp: 100, reward: 50, defeated: false },
-        { id: 2, name: "Ворота 2", hp: 500, maxHp: 500, reward: 250, defeated: false },
-        { id: 3, name: "Ворота 3", hp: 1000, maxHp: 1000, reward: 500, defeated: false }
+        { id: 2, name: "Ворота 2", hp: 500, maxHp: 500, reward: 250, defeated: false }
     ],
     
     upgrades: {
         damage: { level: 1, cost: 100 },
         energy: { level: 1, cost: 200 },
-        autoTap: { level: 0, cost: 500 },
         reward: { level: 1, cost: 300 }
     }
 };
 
-// ====================== ТЕЛЕГРАМ ИНТЕГРАЦИЯ ======================
-
-function initTelegram() {
-    if (!tg) {
-        console.log('Запуск в браузере');
-        return;
-    }
-    
-    console.log('Запуск в Telegram Web App');
-    isTelegram = true;
-    
-    try {
-        tg.expand();
-        tg.setHeaderColor('#0a1931');
-        tg.setBackgroundColor('#1a2980');
-        tg.disableVerticalSwipes();
-        
-        tg.MainButton.setText("ℹ️ О игре");
-        tg.MainButton.show();
-        tg.MainButton.onClick(() => {
-            tg.showAlert('⚽️ Football Tap ⚽️\n\nТапай по мячу, побеждай боссов, покупай улучшения!');
-        });
-        
-        document.body.classList.add('telegram-webapp');
-        
-    } catch (error) {
-        console.error('Ошибка Telegram:', error);
-    }
-}
-
-// ====================== ИНИЦИАЛИЗАЦИЯ ИГРЫ ======================
+// ====================== ИНИЦИАЛИЗАЦИЯ ======================
 
 function initGame() {
     console.log('=== FOOTBALL TAP START ===');
     
-    initTelegram();
+    // Инициализация Telegram
+    if (tg) {
+        try {
+            tg.expand();
+            document.body.classList.add('telegram-webapp');
+        } catch (e) {
+            console.log('Ошибка Telegram:', e);
+        }
+    }
+    
+    // Загрузка сохранения
     loadGame();
+    
+    // Настройка игры
     updateUI();
     setupShop();
     setupUpgrades();
     setupBosses();
     setupTap();
+    setupGoalImage();
     
     // Восстановление энергии
     setInterval(() => {
@@ -116,48 +85,79 @@ function initGame() {
         }
     }, 1000);
     
-    // Авто-тапы
-    startAutoTaps();
-    
     console.log('Игра инициализирована!');
+}
+
+// ====================== ЗАГРУЗКА КАРТИНКИ ВОРОТ ======================
+
+function setupGoalImage() {
+    const goal = document.getElementById('goal');
+    if (!goal) return;
+    
+    // Проверяем несколько источников картинок
+    const imageUrls = [
+        'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?w=800&auto=format&fit=crop'
+    ];
+    
+    let currentIndex = 0;
+    
+    function tryLoadImage(index) {
+        if (index >= imageUrls.length) {
+            // Если все картинки не загрузились, используем градиент
+            goal.style.background = 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), linear-gradient(45deg, #1a1a1a, #333333)';
+            goal.querySelector('.goal-placeholder').style.display = 'block';
+            return;
+        }
+        
+        const img = new Image();
+        img.onload = function() {
+            console.log('Картинка загружена:', imageUrls[index]);
+            goal.style.background = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('${imageUrls[index]}') no-repeat center center`;
+            goal.style.backgroundSize = 'cover';
+            goal.querySelector('.goal-placeholder').style.display = 'none';
+        };
+        
+        img.onerror = function() {
+            console.log('Ошибка загрузки картинки:', imageUrls[index]);
+            currentIndex++;
+            setTimeout(() => tryLoadImage(currentIndex), 500);
+        };
+        
+        img.src = imageUrls[index];
+    }
+    
+    tryLoadImage(0);
 }
 
 // ====================== СИСТЕМА ТАПОВ ======================
 
 function setupTap() {
-    console.log('Настройка тапов...');
-    
     const tapArea = document.getElementById('tapArea');
     const ball = document.getElementById('ball');
     
     if (!tapArea || !ball) return;
     
     function handleTap() {
+        // Проверка энергии
         if (gameState.energy < gameState.energyPerTap) {
             showEnergyWarning();
-            if (navigator.vibrate) navigator.vibrate(100);
             return;
         }
         
         // Тратим энергию
         gameState.energy -= gameState.energyPerTap;
         gameState.totalTaps++;
-        gameState.tapsHistory.push(Date.now());
-        
-        if (gameState.tapsHistory.length > 100) {
-            gameState.tapsHistory = gameState.tapsHistory.slice(-100);
-        }
         
         // Анимация
         ball.classList.add('tap-effect');
         setTimeout(() => ball.classList.remove('tap-effect'), 150);
         
         ball.classList.add('shoot-animation');
-        setTimeout(() => ball.classList.remove('shoot-animation'), 700);
+        setTimeout(() => ball.classList.remove('shoot-animation'), 600);
         
         // Урон
         const damage = calculateDamage();
-        showDamage(damage);
         
         // Анимация попадания в ворота
         const goal = document.getElementById('goal');
@@ -172,9 +172,13 @@ function setupTap() {
         updateUI();
         saveGame();
         
-        if (navigator.vibrate) navigator.vibrate(50);
+        // Вибрация (если поддерживается)
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
+        }
     }
     
+    // Назначаем обработчики
     tapArea.onclick = handleTap;
     ball.onclick = handleTap;
     
@@ -191,41 +195,19 @@ function setupTap() {
 
 function calculateDamage() {
     const currentBall = gameState.balls.find(b => b.equipped) || gameState.balls[0];
-    const baseDamage = currentBall.damage * gameState.upgrades.damage.level;
+    let damage = currentBall.damage * gameState.upgrades.damage.level;
     
+    // 10% шанс критического удара
     if (Math.random() < 0.1) {
+        damage *= 2;
         const ball = document.getElementById('ball');
-        ball.classList.add('critical-hit');
-        setTimeout(() => ball.classList.remove('critical-hit'), 400);
-        return Math.floor(baseDamage * 2);
+        ball.style.boxShadow = '0 0 30px rgba(255,0,0,0.8)';
+        setTimeout(() => {
+            ball.style.boxShadow = '0 10px 25px rgba(0,0,0,0.7), 0 0 20px rgba(255,215,0,0.3)';
+        }, 300);
     }
     
-    return baseDamage;
-}
-
-function showDamage(damage) {
-    const indicator = document.getElementById('damageIndicator');
-    const ball = document.getElementById('ball');
-    
-    if (!indicator || !ball) return;
-    
-    const ballRect = ball.getBoundingClientRect();
-    const container = document.querySelector('.app-container');
-    
-    indicator.textContent = `-${damage}`;
-    indicator.style.left = `${ballRect.left + ballRect.width / 2}px`;
-    indicator.style.top = `${ballRect.top}px`;
-    
-    indicator.style.display = 'block';
-    indicator.style.animation = 'none';
-    
-    setTimeout(() => {
-        indicator.style.animation = 'damageFloat 1s ease-out forwards';
-    }, 10);
-    
-    setTimeout(() => {
-        indicator.style.display = 'none';
-    }, 1000);
+    return Math.floor(damage);
 }
 
 function showEnergyWarning() {
@@ -237,7 +219,7 @@ function showEnergyWarning() {
     
     setTimeout(() => {
         energyFill.style.background = originalColor || 'linear-gradient(90deg, #00b4db, #0083b0)';
-    }, 500);
+    }, 300);
 }
 
 function dealDamage(damage) {
@@ -250,9 +232,11 @@ function dealDamage(damage) {
         boss.hp = 0;
         boss.defeated = true;
         
+        // Награда
         const reward = 10 * gameState.upgrades.reward.level * boss.reward;
         gameState.coins += reward;
         
+        // Переход к следующему боссу
         if (gameState.currentBoss < gameState.bosses.length) {
             gameState.currentBoss++;
             gameState.level++;
@@ -263,66 +247,39 @@ function dealDamage(damage) {
     }
 }
 
-// ====================== АВТО-ТАПЫ ======================
-
-function startAutoTaps() {
-    setInterval(() => {
-        if (gameState.upgrades.autoTap.level > 0 && gameState.energy >= gameState.energyPerTap) {
-            const boss = gameState.bosses[gameState.currentBoss - 1];
-            if (boss && boss.hp > 0) {
-                gameState.energy -= gameState.energyPerTap;
-                gameState.energy = Math.max(0, gameState.energy);
-                
-                const damage = calculateDamage();
-                boss.hp -= damage;
-                
-                if (boss.hp <= 0) {
-                    boss.hp = 0;
-                    boss.defeated = true;
-                    const reward = 10 * gameState.upgrades.reward.level * boss.reward;
-                    gameState.coins += reward;
-                    
-                    if (gameState.currentBoss < gameState.bosses.length) {
-                        gameState.currentBoss++;
-                        gameState.level++;
-                        showLevelUp(reward);
-                    }
-                }
-                
-                updateUI();
-                saveGame();
-            }
-        }
-    }, 1000);
-}
-
-// ====================== UI И ОБНОВЛЕНИЕ ======================
+// ====================== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ======================
 
 function updateUI() {
+    // Монеты и уровень
     document.getElementById('coins').textContent = gameState.coins;
     document.getElementById('level').textContent = gameState.level;
     
+    // Текущий мяч
     const currentBall = gameState.balls.find(b => b.equipped) || gameState.balls[0];
-    const damageMultiplier = gameState.upgrades.damage.level;
-    gameState.damagePerTap = currentBall.damage * damageMultiplier;
-    
-    document.getElementById('damagePerTap').textContent = gameState.damagePerTap;
+    gameState.damagePerTap = currentBall.damage * gameState.upgrades.damage.level;
     gameState.energyPerTap = currentBall.energyCost;
+    
+    // Обновляем значения
+    document.getElementById('damagePerTap').textContent = gameState.damagePerTap;
     document.getElementById('energyPerTap').textContent = gameState.energyPerTap;
     document.getElementById('coinsPerGoal').textContent = 10 * gameState.upgrades.reward.level;
     
+    // Босс
     const boss = gameState.bosses[gameState.currentBoss - 1];
     if (boss) {
         const healthPercent = (boss.hp / boss.maxHp) * 100;
         document.getElementById('bossProgress').style.width = `${healthPercent}%`;
-        document.getElementById('bossHP').textContent = `HP: ${Math.max(0, boss.hp)}/${boss.maxHp}`;
+        document.getElementById('bossHP').textContent = `${Math.max(0, boss.hp)}/${boss.maxHp}`;
         document.getElementById('bossName').textContent = boss.name;
     }
     
+    // Энергия
     const energyPercent = (gameState.energy / gameState.maxEnergy) * 100;
     document.getElementById('energyFill').style.width = `${energyPercent}%`;
-    document.getElementById('energy').textContent = `${Math.floor(gameState.energy)}/${gameState.maxEnergy}`;
+    document.getElementById('energy').textContent = Math.floor(gameState.energy);
+    document.getElementById('maxEnergy').textContent = gameState.maxEnergy;
     
+    // Изображение мяча
     document.getElementById('ballImage').src = currentBall.icon;
 }
 
@@ -337,26 +294,27 @@ function setupShop() {
     gameState.balls.forEach(ball => {
         const ballItem = document.createElement('div');
         ballItem.className = `ball-item ${ball.equipped ? 'equipped' : ''}`;
+        ballItem.style.display = 'flex';
+        ballItem.style.alignItems = 'center';
+        ballItem.style.justifyContent = 'space-between';
         
         ballItem.innerHTML = `
-            <div class="ball-preview">
-                <img src="${ball.icon}" alt="${ball.name}" style="width: 70%;">
-            </div>
-            <div class="ball-info">
-                <h3>${ball.name}</h3>
-                <div class="ball-stats">
-                    <span>Урон: ${ball.damage}</span>
-                    <span>Энергия: ${ball.energyCost}</span>
+            <div style="display: flex; align-items: center;">
+                <div class="ball-preview">
+                    <img src="${ball.icon}" alt="${ball.name}" style="width: 70%;">
                 </div>
-                ${!ball.owned ? 
-                    `<p class="ball-price">${ball.price} монет</p>` : 
-                    '<p>✓ Владеете</p>'
-                }
+                <div style="margin-left: 10px;">
+                    <h3>${ball.name}</h3>
+                    <div class="ball-stats">
+                        <span>Урон: ${ball.damage}</span>
+                        <span>Энергия: ${ball.energyCost}</span>
+                    </div>
+                </div>
             </div>
             <button class="${ball.owned ? 'equip-btn' : 'buy-btn'}" 
                     onclick="${ball.owned ? `equipBall('${ball.id}')` : `buyBall('${ball.id}')`}"
                     ${ball.equipped ? 'disabled' : ''}>
-                ${ball.owned ? (ball.equipped ? '✓' : 'Надеть') : 'Купить'}
+                ${ball.owned ? (ball.equipped ? '✓' : 'Надеть') : ball.price + '🪙'}
             </button>
         `;
         
@@ -385,7 +343,10 @@ function equipBall(ballId) {
     const ball = gameState.balls.find(b => b.id === ballId);
     if (!ball) return;
     
+    // Снимаем все мячи
     gameState.balls.forEach(b => b.equipped = false);
+    
+    // Надеваем выбранный
     ball.equipped = true;
     
     updateUI();
@@ -406,7 +367,7 @@ function setupUpgrades() {
         { 
             id: 'damage', 
             title: 'Сила удара', 
-            description: 'Увеличивает урон за тап', 
+            description: '+1 урон за тап', 
             icon: 'fa-fist-raised',
             level: gameState.upgrades.damage.level,
             cost: gameState.upgrades.damage.cost
@@ -414,23 +375,15 @@ function setupUpgrades() {
         { 
             id: 'energy', 
             title: 'Емкость энергии', 
-            description: 'Увеличивает максимальную энергию', 
+            description: '+20 энергии', 
             icon: 'fa-battery-full',
             level: gameState.upgrades.energy.level,
             cost: gameState.upgrades.energy.cost
         },
         { 
-            id: 'autoTap', 
-            title: 'Авто-тапы', 
-            description: 'Автоматические тапы каждую секунду', 
-            icon: 'fa-robot',
-            level: gameState.upgrades.autoTap.level,
-            cost: gameState.upgrades.autoTap.cost
-        },
-        { 
             id: 'reward', 
             title: 'Награда за гол', 
-            description: 'Увеличивает монеты за гол', 
+            description: '+10% награды', 
             icon: 'fa-coins',
             level: gameState.upgrades.reward.level,
             cost: gameState.upgrades.reward.cost
@@ -440,20 +393,25 @@ function setupUpgrades() {
     upgrades.forEach(upgrade => {
         const upgradeItem = document.createElement('div');
         upgradeItem.className = 'upgrade-item';
+        upgradeItem.style.display = 'flex';
+        upgradeItem.style.alignItems = 'center';
+        upgradeItem.style.justifyContent = 'space-between';
         
         upgradeItem.innerHTML = `
-            <div class="upgrade-icon">
-                <i class="fas ${upgrade.icon}"></i>
+            <div style="display: flex; align-items: center;">
+                <div class="upgrade-icon">
+                    <i class="fas ${upgrade.icon}"></i>
+                </div>
+                <div style="margin-left: 10px;">
+                    <h3>${upgrade.title}</h3>
+                    <p style="font-size: 12px; color: #aaa;">${upgrade.description}</p>
+                </div>
             </div>
-            <div class="upgrade-info">
-                <h3>${upgrade.title} <span class="upgrade-level">Ур. ${upgrade.level}</span></h3>
-                <p>${upgrade.description}</p>
-            </div>
-            <div class="upgrade-action">
-                <p class="upgrade-cost">${upgrade.cost}</p>
+            <div style="text-align: right;">
+                <p style="color: #FFD700; font-weight: bold; margin-bottom: 5px;">${upgrade.cost}🪙</p>
                 <button class="buy-btn" onclick="buyUpgrade('${upgrade.id}')"
                         ${gameState.coins < upgrade.cost ? 'disabled' : ''}>
-                    Улучшить
+                    Ур. ${upgrade.level}
                 </button>
             </div>
         `;
@@ -471,6 +429,7 @@ function buyUpgrade(type) {
         upgrade.level++;
         upgrade.cost = Math.floor(upgrade.cost * 1.5);
         
+        // Применяем улучшение
         if (type === 'energy') {
             gameState.maxEnergy = 100 + (upgrade.level * 20);
         }
@@ -482,7 +441,6 @@ function buyUpgrade(type) {
         const names = {
             'damage': 'Сила удара',
             'energy': 'Емкость энергии',
-            'autoTap': 'Авто-тапы',
             'reward': 'Награда за гол'
         };
         
@@ -503,18 +461,23 @@ function setupBosses() {
     gameState.bosses.forEach(boss => {
         const bossItem = document.createElement('div');
         bossItem.className = 'boss-item';
+        bossItem.style.display = 'flex';
+        bossItem.style.alignItems = 'center';
+        bossItem.style.justifyContent = 'space-between';
+        
+        const isCurrent = gameState.currentBoss === boss.id;
+        const canFight = !boss.defeated && isCurrent;
         
         bossItem.innerHTML = `
-            <div style="flex: 1;">
+            <div>
                 <h3>${boss.name}</h3>
-                <p>HP: ${boss.hp}/${boss.maxHp}</p>
-                <p>Награда: ${boss.reward * 10} монет</p>
-                <p>${boss.defeated ? '✅ Побежден' : '⚔️ Доступен'}</p>
+                <p style="font-size: 14px; margin: 5px 0;">HP: ${boss.hp}/${boss.maxHp}</p>
+                <p style="font-size: 12px; color: #FFD700;">Награда: ${boss.reward * 10}🪙</p>
             </div>
             <button class="fight-btn" 
                     onclick="fightBoss(${boss.id})"
-                    ${boss.defeated || gameState.currentBoss !== boss.id ? 'disabled' : ''}>
-                ${boss.defeated ? '✓' : 'Сражаться'}
+                    ${!canFight ? 'disabled' : ''}>
+                ${boss.defeated ? '✓' : (isCurrent ? 'Сражаться' : '🔒')}
             </button>
         `;
         
@@ -557,18 +520,23 @@ function showLevelUp(reward) {
 function closeModal() {
     document.getElementById('levelUpModal').style.display = 'none';
     
+    // Сбрасываем здоровье следующего босса
     const boss = gameState.bosses[gameState.currentBoss - 1];
     if (boss) {
         boss.hp = boss.maxHp;
     }
+    
     updateUI();
     setupBosses();
 }
 
 function switchScreen(screenName) {
+    // Скрываем все экраны
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
+    
+    // Показываем нужный экран
     document.getElementById(`${screenName}Screen`).classList.add('active');
 }
 
