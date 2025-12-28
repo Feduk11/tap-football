@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="mobile-web-app-capable" content="yes">
     <title>Football Tap</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,70 +19,67 @@
                     <span id="coins">1000</span>
                 </div>
                 <div class="level-display">
-                    Уровень: <span id="level">1</span>
+                    <span id="level">1</span>
                 </div>
             </header>
 
             <main class="game-area">
-                <!-- Ворота занимают максимум места -->
+                <!-- Ворота -->
                 <div class="goal-container">
                     <div class="goal" id="goal">
-                        <div class="goal-net"></div>
-                        <div class="goal-frame"></div>
+                        <div class="goal-placeholder">⚽</div>
                     </div>
                     
-                    <!-- HP ворот - компактно внизу -->
+                    <!-- HP ворот -->
                     <div class="boss-info">
-                        <h3 id="bossName">Ворота 1</h3>
+                        <div class="boss-name" id="bossName">Ворота 1</div>
                         <div class="progress-container">
                             <div class="progress-bar">
                                 <div class="progress-fill" id="bossProgress"></div>
                             </div>
-                            <p id="bossHP">HP: 100/100</p>
+                            <div class="hp-text" id="bossHP">100/100</div>
                         </div>
                     </div>
                     
-                    <!-- Мяч - большой и по центру -->
+                    <!-- Мяч -->
                     <div class="tap-area" id="tapArea">
                         <div class="ball" id="ball">
                             <img src="https://cdn-icons-png.flaticon.com/128/947/947416.png" alt="Мяч" id="ballImage">
                         </div>
-                        <p class="tap-hint">⚽ Тапай по мячу! ⚽</p>
-                        
-                        <!-- Индикатор урона -->
-                        <div class="damage-indicator" id="damageIndicator">+1</div>
                     </div>
                 </div>
 
-                <!-- Компактная панель энергии -->
+                <!-- Статистика -->
+                <div class="stats-container">
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-label">Урон</div>
+                            <div class="stat-value" id="damagePerTap">1</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Энергия</div>
+                            <div class="stat-value" id="energyPerTap">1</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Награда</div>
+                            <div class="stat-value" id="coinsPerGoal">10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Энергия -->
                 <div class="energy-container">
                     <div class="energy-info">
                         <i class="fas fa-bolt"></i>
-                        <span id="energy">100/100</span>
+                        <span id="energy">100</span>/<span id="maxEnergy">100</span>
                     </div>
                     <div class="energy-bar">
                         <div class="energy-fill" id="energyFill"></div>
                     </div>
                 </div>
-
-                <!-- Минималистичная статистика -->
-                <div class="stats">
-                    <div class="stat">
-                        <span>Урон:</span>
-                        <strong id="damagePerTap">1</strong>
-                    </div>
-                    <div class="stat">
-                        <span>Энергия:</span>
-                        <strong id="energyPerTap">1</strong>
-                    </div>
-                    <div class="stat">
-                        <span>Награда:</span>
-                        <strong id="coinsPerGoal">10</strong>
-                    </div>
-                </div>
             </main>
 
-            <!-- Кнопки навигации - компактные -->
+            <!-- Кнопки навигации -->
             <footer class="game-footer">
                 <button class="nav-btn" onclick="switchScreen('shop')">
                     <i class="fas fa-store"></i>
@@ -103,42 +98,48 @@
 
         <!-- Экран магазина -->
         <div id="shopScreen" class="screen">
-            <header class="shop-header">
+            <header class="screen-header">
                 <button class="back-btn" onclick="switchScreen('game')">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h2><i class="fas fa-store"></i> Магазин</h2>
+                <h2>Магазин</h2>
             </header>
-            <main class="shop-items"></main>
+            <main class="shop-items">
+                <!-- Мячи будут добавлены через JS -->
+            </main>
         </div>
 
         <!-- Экран боссов -->
         <div id="bossesScreen" class="screen">
-            <header class="bosses-header">
+            <header class="screen-header">
                 <button class="back-btn" onclick="switchScreen('game')">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h2><i class="fas fa-trophy"></i> Боссы</h2>
+                <h2>Боссы</h2>
             </header>
-            <main class="bosses-list"></main>
+            <main class="bosses-list">
+                <!-- Боссы будут добавлены через JS -->
+            </main>
         </div>
 
         <!-- Экран улучшений -->
         <div id="upgradesScreen" class="screen">
-            <header class="upgrades-header">
+            <header class="screen-header">
                 <button class="back-btn" onclick="switchScreen('game')">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h2><i class="fas fa-arrow-up"></i> Улучшения</h2>
+                <h2>Улучшения</h2>
             </header>
-            <main class="upgrades-list"></main>
+            <main class="upgrades-list">
+                <!-- Улучшения будут добавлены через JS -->
+            </main>
         </div>
     </div>
 
     <!-- Модальное окно уровня -->
     <div id="levelUpModal" class="modal">
         <div class="modal-content">
-            <h2>🎉 Уровень пройден! 🎉</h2>
+            <h2>🎉 Уровень пройден!</h2>
             <p>Вы получили <span class="reward-coins">+50</span> монет!</p>
             <button onclick="closeModal()">Продолжить</button>
         </div>
